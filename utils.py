@@ -296,10 +296,30 @@ all_pipeline = Pipeline(steps=[('pipeline', all_pipeline),
 ## apply
 _ = all_pipeline.fit(X_train, y_train) 
 
-def process_new(X_new):
 
+
+
+
+def process_new(X_new):
+    ''' This function is to apply the pipeline to user data. Taking a list.
+    Args:
+    *****
+        (X_new: List) --> the user input as a List
+
+    Returns:
+    *****
+        (X_processed: 2D numpy array) --> The processed numpy array of user input
+    '''
     df_new = pd.DataFrame([X_new], columns=X_train.columns)
 
+    # Adjust the datatype
+    for col in X_train:
+        df_new[col] = df_new[col].astype(X_train[col].dtype) 
+
+
+    # Feature Engineering
+
+    # Apply the pipeline
     X_processed = all_pipeline.transform(df_new)
 
     return X_processed
