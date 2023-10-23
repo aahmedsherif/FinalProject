@@ -45,7 +45,6 @@ df = pd.read_csv("houses.csv", na_values=['Unknown', '', 'na', 'nan', 'NA', 'NAN
 df.drop(['Ad List', 'description'], axis=1, inplace=True)
 
 
-
 # trim and replace space inside columns names with _
 df.columns = df.columns.str.lower().str.strip().str.strip().str.replace(' ', '_')
 df.rename(columns={'#_of_floors':'number_of_floors'}, inplace=True)
@@ -87,12 +86,30 @@ df['total_units'] = df['total_units'].astype('Int64')
 df['parking_lot'] = df['parking_lot'].astype('Int64')
 
 
-# create column for each nearby service
+# convert Firm_Number to int64
+def fix_firm_number(value:str):
+    try:
+        if isinstance(value, np.float64):
+            return value 
+        elif isinstance(value, str):
+            if value.startswith('E'):
+                modified_value = value.replace('E', '')
+                return np.float64(modified_value) 
+            else:
+                return np.float64(value)
+        else:
+            return np.nan
+    except:
+        return np.nan
+
+df['firm_number'] = df['firm_number'].apply(fix_firm_number) 
+
+
+# create column for each nearby service 
 df['nearby_highway'] = df['highway'].isna() == False
 df['nearby_hospital'] = df['hospital'].isna() == False
 df['nearby_railway_station'] = df['nearby_railway_station'].isna() == False
-df['nearby_mall'] = df['nearby_mall'].isna() == False
-df['nearby_mall2'] = df['mall'].isna() == False
+df['nearby_mall'] = (df['nearby_mall'].isna() == False) | (df['mall'].isna() == False) 
 df['nearby_railway_station'] = df['railway_station'].isna() == False
 df['nearby_school'] = df['nearby_school'].isna() == False
 df['nearby_bus_stop'] = df['bus_stop'].isna() == False
@@ -126,6 +143,8 @@ def split_facilities_into_separate_columns(df):
     return df
 
 df = split_facilities_into_separate_columns(df)
+# trim and replace space inside columns names with _
+df.columns = df.columns.str.lower().str.strip().str.strip().str.replace(' ', '_')
 df.drop(['facility_10'], axis=1, inplace=True)
 df.drop(['facilities'], axis=1, inplace=True)
 
@@ -234,7 +253,7 @@ other_categ_cols = list(set(categ_cols) - set(small_categ_cols))
 
 
 print(X_train.columns) 
-print('*'*10)
+print('*'*10) 
 #pd.set_option('display.max_columns', None)
 #print(X_train.iloc[0:2, :])
 
@@ -311,10 +330,56 @@ def process_new(X_new):
         (X_processed: 2D numpy array) --> The processed numpy array of user input
     '''
     df_new = pd.DataFrame([X_new], columns=X_train.columns)
-
+    print(df_new)
     # Adjust the datatype
     for col in X_train:
-        df_new[col] = df_new[col].astype(X_train[col].dtype) 
+        if X_train[col].dtype == bool:
+            df_new[col] = df_new[col] =='True'
+        else:    
+            df_new[col] = df_new[col].astype(X_train[col].dtype)
+    # df_new['bedroom'] = df_new['bedroom'].astype('Int64') 
+    # df_new['bathroom'] = df_new['bathroom'].astype('Int64') 
+    # df_new['property_size'] = df_new['property_size'].astype('float64')  
+    # df_new['nearby_school'] = df_new['nearby_school'] =='True'
+
+    # df_new['nearby_mall'] = df_new['nearby_mall'] =='True'
+    # df_new['building_name'] = df_new['building_name'].astype('object') 
+    # df_new['developer'] = df_new['developer'].astype('object') 
+    # df_new['tenure_type'] = df_new['tenure_type'].astype('object') 
+    # df_new['completion_year'] = df_new['completion_year'].astype('Int64') 
+    # df_new['number_of_floors'] = df_new['number_of_floors'].astype('Int64') 
+    # df_new['total_units'] = df_new['total_units'].astype('Int64') 
+    # df_new['property_type'] = df_new['property_type'].astype('object') 
+    # df_new['parking_lot'] = df_new['parking_lot'].astype('Int64') 
+    # df_new['floor_range'] = df_new['floor_range'].astype('object') 
+    # df_new['land_title'] = df_new['land_title'].astype('object') 
+    # df_new['firm_type'] = df_new['firm_type'].astype('object') 
+    # df_new['firm_number'] = df_new['firm_number'].astype('float64') 
+    # df_new['ren_number'] = df_new['ren_number'].astype('Int64') 
+    # df_new['nearby_railway_station'] = df_new['nearby_railway_station'] =='True'
+
+    # df_new['nearby_highway'] = df_new['nearby_highway'] =='True' 
+    # df_new['nearby_hospital'] = df_new['nearby_hospital'] =='True'
+    # df_new['nearby_bus_stop'] = df_new['nearby_bus_stop'] =='True'
+    # df_new['nearby_park'] = df_new['nearby_park'] =='True'
+    # df_new['facility_parking'] = df_new['facility_parking'] =='True' 
+    # df_new['facility_security'] = df_new['facility_security'] =='True' 
+    # df_new['facility_swimming_pool'] = df_new['facility_swimming_pool'] =='True'
+    # df_new['facility_playground'] = df_new['facility_playground'] =='True'
+    # df_new['facility_barbeque_area'] = df_new['facility_barbeque_area'] =='True'
+    # df_new['facility_jogging_track'] = df_new['facility_jogging_track'] =='True'
+    # df_new['facility_minimart'] = df_new['facility_minimart'] =='True' 
+    # df_new['facility_lift'] = df_new['facility_lift'] =='True' 
+    # df_new['facility_gymnasium'] = df_new['facility_gymnasium'] =='True'           
+    # df_new['facility_multipurpose_hall'] = df_new['facility_multipurpose_hall'] =='True' 
+    # df_new['facility_sauna'] = df_new['facility_sauna'] =='True' 
+    # df_new['facility_tennis_court'] = df_new['facility_tennis_court'] =='True'
+    # df_new['facility_club_house'] = df_new['facility_club_house'] =='True' 
+    # df_new['facility_squash_court'] = df_new['facility_squash_court'] =='True' 
+    # df_new['ren_type'] = df_new['ren_type'].astype('object')      
+    # df_new['state'] = df_new['state'].astype('object') 
+    # df_new['city'] = df_new['city'].astype('object')        
+   
 
 
     # Feature Engineering
