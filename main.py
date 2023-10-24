@@ -6,6 +6,7 @@ import joblib
 import numpy as np
 import utils
 from datetime import datetime
+import pandas as pd
 
 ## Load the model
 model = joblib.load('grid_search_model.pkl')
@@ -44,26 +45,26 @@ def model_regression():
     with st.container():
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            tenure_type = st.selectbox('Tenure Type', options=['Freehold', 'Leasehold'])
+            tenure_type = st.selectbox('Tenure Type', options=utils.X_train['tenure_type'].value_counts().index.sort_values())
         with col2: 
-            property_type = st.selectbox('Property Type', options=['Condominium', 'Apartment', 'Service Residence', 'Flat', 'Studio', 'Duplex', 'Townhouse Condo', 'Others'])
+            property_type = st.selectbox('Property Type', options=utils.X_train['property_type'].value_counts().index.sort_values())
         with col3: 
-            floor_range = st.selectbox('Floor Range', options=['Medium', 'High', 'Low'])
+            floor_range = st.selectbox('Floor Range', options=utils.X_train['floor_range'].value_counts().index.sort_values())
         with col4:
-            land_title = st.selectbox('Land Title', options=['Non Bumi Lot', 'Bumi Lot', 'Malay Reserved'])
+            land_title = st.selectbox('Land Title', options=utils.X_train['land_title'].value_counts().index.sort_values())
     
     
 
     with st.container():
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            firm_type = st.selectbox('Firm Type', options=['E', 'VE', 'VEPM', 'AE', 'V', 'EPM', 'PM'])
+            firm_type = st.selectbox('Firm Type', options=utils.X_train['firm_type'].value_counts().index.sort_values())
         with col2: 
-            firm_number = st.number_input('Firm Number', value=0, step=1)
+            firm_number = st.selectbox('Firm Number', options=utils.X_train['firm_number'].value_counts().index.sort_values())
         with col3: 
-            ren_type = st.selectbox('Ren Type', options=['REN', 'PEA', 'E', 'REA', 'PV', 'V'])
+            ren_type = st.selectbox('Ren Type', options=utils.X_train['ren_type'].value_counts().index.sort_values())
         with col4:
-            ren_number = st.number_input('Ren Number', value=0, step=1)
+            ren_number = st.selectbox('Ren Number', options=utils.X_train['ren_number'].value_counts().index.sort_values())
     
     st.markdown('<hr>', unsafe_allow_html=True)
 
@@ -137,19 +138,14 @@ def model_regression():
     
     st.markdown('<hr>', unsafe_allow_html=True)
              
+     
+
     with st.container():
         col1, col2 = st.columns(2)
         with col1:
-            state = st.selectbox('state', options=['Alor Gajah', 'Ayer Keroh', 'Johor', 'Kedah', 'Kelantan', 'Kuala Lumpur', 'Labuan', 'Melaka City', 
-                                           'Negeri Sembilan', 'Pahang', 'Penang', 'Perak', 'Putrajaya', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu'])
+            state = st.selectbox('State', options=np.append([np.nan], utils.X_train['state'].value_counts().index.sort_values()))
         with col2: 
-            city = st.selectbox('city', options=['Ampang', 'Ayer Itam', 'Bangi', 'Batu Pahat', 'Bayan Baru', 'Cheras', 'Cyberjaya', 'Damansara Perdana', 
-                                           'Gelang Patah', 'Gelugor', 'Ipoh', 'Iskandar Puteri', 'Johor Bahru', 'Kajang', 'Klang', 'Kota Bharu', 'Kota Kinabalu', 
-                                           'Kota Samarahan', 'Kuala Langat', 'Kuantan'
-                                           , 'Kuching', 'Kulai', 'Miri', 'Muar', 'Nusajaya', 'Papar', 'Pasir Gudang', 'Penampang', 'Petaling Jaya', 'Puchong', 
-                                           'Rawang', 'Sandakan', 'Selayang', 'Semenyih', 'Sentul', 'Sepang', 'Seremban', 'Seri Kembangan', 'Setapak',
-                                             'Setia Alam', 'Shah Alam', 'Simpang Ampat', 'Skudai', 'Subang Jaya', 'Taiping',
-                                            'Tawau', 'Wangsa Maju'])
+            city = st.selectbox('City', options=np.append([np.nan], utils.X_train['city'].value_counts().index.sort_values()))
         #with col3: 
              
         #with col4:
@@ -157,9 +153,9 @@ def model_regression():
     with st.container():
         col1, col2 = st.columns(2)
         with col1:
-            building_name = st.text_input('Building Name')
+            building_name = st.selectbox('Building Name', options=np.append([np.nan], utils.X_train['building_name'].value_counts().index.sort_values())) 
         with col2:
-            developer = st.text_input('Developer')
+            developer = st.selectbox('Developer', options=np.append([np.nan], utils.X_train['developer'].value_counts().index.sort_values()))
 
     if st.button('Predict Price'):
 
@@ -170,7 +166,7 @@ def model_regression():
                           facility_Security  , facility_Swimming_Pool, facility_Playground, facility_Barbeque_area, facility_Jogging_Track,
                            facility_Minimart , facility_Lift, facility_Gymnasium, facility_Multipurpose_hall, facility_Sauna, facility_Tennis_Court,
                             facility_Club_house ,facility_Squash_Court , ren_type, state, city])
- 
+        
 
         ## Preprocessing
         X_processed = utils.process_new(X_new)
@@ -180,6 +176,7 @@ def model_regression():
 
         ## Display results
         st.success(f'Predicted Price = {np.exp(y_pred[0]):,.2f}')
+        #st.success(f'Predicted Price = {type(developer)}')
 
     return None
 

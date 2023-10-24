@@ -380,7 +380,7 @@ def process_new(X_new):
     # df_new['state'] = df_new['state'].astype('object') 
     # df_new['city'] = df_new['city'].astype('object')        
    
-
+    print(f'df_new[developer] = {df_new["developer"].loc[0]}')
 
     # Feature Engineering
 
