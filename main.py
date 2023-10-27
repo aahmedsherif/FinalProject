@@ -7,9 +7,12 @@ import numpy as np
 import utils
 from datetime import datetime
 import pandas as pd
+import os
+
 
 ## Load the model
-model = joblib.load('grid_search_model.pkl')
+MODEL_PATH = os.path.join(os.getcwd, 'grid_search_model.pkl')
+model = joblib.load(MODEL_PATH)
 
 def model_regression():
 
