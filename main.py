@@ -11,7 +11,7 @@ import os
 
 
 ## Load the model
-MODEL_PATH = os.path.join(os.getcwd, 'grid_search_model.pkl')
+MODEL_PATH = os.path.join(os.getcwd(), 'grid_search_model.pkl')
 model = joblib.load(MODEL_PATH)
 
 def model_regression():
